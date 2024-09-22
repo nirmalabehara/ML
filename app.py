@@ -1,23 +1,13 @@
 import streamlit as st
 import joblib
 import pandas as pd
-
-# Load your trained model
-@st.cache_resource  # Caches the model to prevent reloading on every interaction
+@st.cache_resource 
 def load_model():
     return joblib.load('best_random_forest_model.pkl')
-
-# Load model
 model = load_model()
-
-# Define input feature names (based on your model's training features)
 feature_names = ['age', 'sex', 'cp', 'trtbps', 'chol', 'fbs', 'restecg', 'thalachh', 
                  'exng', 'oldpeak', 'slp', 'caa', 'thall']
-
-# Define the Streamlit app layout
 st.title('Heart Health Prediction App')
-
-# Collect user input
 def get_user_input():
     age = st.number_input('Age', min_value=1, max_value=120, value=50)
     sex = st.selectbox('Sex', [0, 1], help="0 = Female, 1 = Male")
@@ -32,8 +22,6 @@ def get_user_input():
     slp = st.number_input('Slope of Peak Exercise ST Segment (slp)', min_value=0, max_value=2, value=1)
     caa = st.number_input('Number of Major Vessels (0-3) Colored by Flourosopy (caa)', min_value=0, max_value=3, value=0)
     thall = st.number_input('Thalassemia (thall)', min_value=0, max_value=3, value=1)
-
-    # Create a dataframe for the inputs
     user_data = pd.DataFrame({
         'age': [age],
         'sex': [sex],
@@ -51,15 +39,9 @@ def get_user_input():
     })
     
     return user_data
-
-# Collect input from the user
 user_input = get_user_input()
-
-# Display user input for verification
 st.subheader('User Input:')
 st.write(user_input)
-
-# Make predictions
 if st.button('Predict'):
     prediction = model.predict(user_input)
     st.subheader('Prediction Result:')
@@ -70,5 +52,3 @@ if st.button('Predict'):
         st.success("The model predicts that the patient is not at risk of heart disease.")
     
     st.write(f'Prediction: {prediction[0]}')
-
-# To run Streamlit, use: streamlit run app.py
